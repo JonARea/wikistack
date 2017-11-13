@@ -16,7 +16,7 @@ const Page = db.define('page', {
         allowNull: false
     },
     status: {
-        type: Sequelize.ENUM('open', 'closed'),
+        type: Sequelize.ENUM('open', 'closed'), //req.body value must match exactly
         allowNull: false
     },
     date: {
@@ -24,11 +24,19 @@ const Page = db.define('page', {
         defaultValue: Sequelize.NOW
     }
 
-}, {
+}, { //getters and hooks should be in the same object after the rows object
     getterMethods: {
         route() {
             return '/wiki/' + this.urlTitle;
         }
+    },
+
+    hooks: {
+        beforeValidate: (page) => {
+            let urlTitle = page.title.replace(/\s+/g, '_')
+            urlTitle = urlTitle.replace(/[^a-zA-Z\d\s_]/g, '')
+            page.urlTitle = urlTitle
+        },
     }
 });
 
