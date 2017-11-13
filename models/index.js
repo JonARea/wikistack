@@ -40,6 +40,7 @@ const Page = db.define('page', {
     }
 });
 
+
 const User = db.define('user', {
     name: {
         type: Sequelize.STRING,
@@ -53,6 +54,11 @@ const User = db.define('user', {
         }
     }
 });
+
+Page.belongsTo(User, {
+    as: 'author'
+});
+
 
 module.exports = {
     Page: Page,
