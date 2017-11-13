@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const nunjucks = require('nunjucks')
 const models = require('./models')
+const routes = require('./routes')
 
 app.use(morgan('dev'))
 
@@ -20,6 +21,6 @@ models.User.sync();
 app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
 app.use(express.static('/public'))
-app.get('/', (req, res) => res.send('hi there'))
-
+//app.get('/', (req, res) => res.send('hi there'))
+app.use('/', routes);
 app.listen(3000, () => console.log('running on port 3000'))
