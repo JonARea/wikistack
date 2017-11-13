@@ -19,13 +19,21 @@ router.post('/', (req, res) => {
         //res.json(req.body);
         .then((user) => {
             //res.json(user);
-            wikiDB.Page.create({
+        return wikiDB.Page.create({
                 title: req.body.title,
                 content: req.body.content,
                 status: req.body.status,
-                authorId: user[0].id
+            })
+        })
+        .then(page => page.setAuthor(user[0]))
+        .then(page => {
+            if (!page) res.send('That page was not found')
 
-            }).then(page => res.redirect('/wiki/' + page.urlTitle))
+            page.getAuthor()
+            .then(author => {
+                page.author = author
+                return res.redirect(page.route)
+            })
         })
         .catch(err => {
             console.log(err)
@@ -42,11 +50,16 @@ router.get("/:urlTitle", (req, res) => {
                 urlTitle: urlTitle
             }
         })
-        .then(page => res.render("wikipage", {
-            page: page
-        }))
+        .then(page => {
+            if (!page) res.send('That page was not found')
+
+            page.getAuthor()
+            .then(author => {
+                page.author = author
+                return res.render('wikipage', {page: page})
+            })
+        })
+        .catch(err => res.send('There was an error'))
 })
-
-
 
 module.exports = router;
